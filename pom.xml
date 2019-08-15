@@ -2,12 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.7.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
 	<groupId>com.nuiiqk</groupId>
 	<artifactId>demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -15,34 +9,132 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.locales>zh_CN</project.build.locales>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 	</properties>
-
+	
+	<!-- 统一管理子模块中parent标签version的值 -->
+	<!-- 执行mvn -N versions:update-child-modules 则会自动把子POM的<parent>标签中的version更新为和父POM一致 
+		或者执行mvn versions:set -DnewVersion=1.0.1-SNAPSHOT 设置版本号 -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<configuration>
+					<generateBackupPoms>false</generateBackupPoms>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<!-- Spring Boot的Maven插件（Spring Boot Maven plugin）能够以Maven的方式为应用提供Spring 
+					Boot的支持 -->
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.nuiiqk.Application</mainClass>
+					<executable>true</executable>
+					<layout>JAR</layout>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+	  	
+			<!-- Docker maven plugin -->
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<configuration>
+					<!-- <imageName>${project.groupId}/${project.artifactId}:${project.version}</imageName> -->
+					<imageName>${project.artifactId}:${project.version}</imageName>
+					<!-- 指定dockerfile文件 -->
+					<!-- <dockerDirectory>src/main/docker</dockerDirectory> -->
+					<!-- 指定dockerfile文件 -->
+					<!-- 插件自动生成docekrfile -->
+					<!-- 依赖基础镜像 -->
+					<baseImage>guyuexihong/jdk8</baseImage>
+					<!-- 作者信息 -->
+					<maintainer>changan_wenda</maintainer>
+					<!-- 挂载路径 -->
+					<volumes>/tmp</volumes>
+					<!-- 容器启动后将要执行的命令，如需换行末尾需要加\ -->
+					<entryPoint>["java","-Djava.security.egd=file:/dev/./urandom",\
+						"-Duser.timezone=GMT+8", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+					<!-- 需要拷贝到镜像中的资源 -->
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+					<!-- 插件自动生成docekrfile -->
+				</configuration>
+			</plugin>
+			<!-- Docker maven plugin -->
+		</plugins>
+	</build>
+	
+	<!-- Maven 项目间的继承通过 parent 来表示 -->
+	<parent>
+		<!-- 被继承的父项目的全球唯一标识符 （目前理解为被继承目标所在位置的路径） -->
+		<groupId>org.springframework.boot</groupId>
+		<!-- 被继承的父项目的构件标识符 （目前理解为被继承目标对象的名称） -->
+		<!-- spring-boot-starter-parent 该父类项目中定义了spring boot 版本的基础依赖以及一些默认配置类容 -->
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<!-- (目标对象版本号) -->
+		<version>2.1.7.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<!-- spring-boot-starter-tomcat是Spring Boot默认就会配置的，即上面说到的内嵌tomcat， 将其设置为provided是在打包时会将该包(依赖)排除，因为要放到独立的tomcat中运行，Spring 
+				Boot内嵌的Tomcat是不需要用到的。 -->
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+<!-- 		<dependency>
+			<groupId>mysql</groupId>
+			mysql-connector-java 是MySQL的JDBC驱动包,用JDBC连接MySQL数据库时必须使用该jar包
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency> -->
+		<!-- 对json 的处理 -->
+<!-- 		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.58</version>
+		</dependency>		 -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
+	<!-- 	<dependency>
 			<groupId>org.springframework.boot</groupId>
+			测试单元
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>
