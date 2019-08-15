@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nuiiqk</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>nuiiqk-web</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>nuiiqk-web</name>
 	<description>Demo project for Spring Boot</description>
@@ -66,7 +66,7 @@
 					<!-- 依赖基础镜像 -->
 					<baseImage>guyuexihong/jdk8</baseImage>
 					<!-- 作者信息 -->
-					<maintainer>changan_wenda</maintainer>
+					<maintainer>nuiiqk</maintainer>
 					<!-- 挂载路径 -->
 					<volumes>/tmp</volumes>
 					<!-- 容器启动后将要执行的命令，如需换行末尾需要加\ -->
