@@ -5,7 +5,7 @@
 	<groupId>com.nuiiqk</groupId>
 	<artifactId>demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
+	<name>nuiiqk-web</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -118,6 +118,7 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency> -->
+		
 		<!-- 对json 的处理 -->
 <!-- 		<dependency>
 			<groupId>com.alibaba</groupId>
